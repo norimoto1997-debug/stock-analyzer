@@ -1,0 +1,28 @@
+name: 毎朝株式自動分析
+
+on:
+  schedule:
+    - cron: "0 23 * * 1-5"
+  workflow_dispatch:
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v4
+
+      - name: Python セットアップ
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 依存パッケージをインストール
+        run: pip install -r requirements.txt
+
+      - name: 株式分析を実行してLINE通知
+        env:
+          LINE_TOKEN: ${{ secrets.LINE_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python main.py
